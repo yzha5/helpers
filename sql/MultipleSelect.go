@@ -157,12 +157,17 @@ func makeEachSqlCmd(c *Column) (str string, err error) {
 
 	case GT:
 
-		if c.Type == String || c.Type == Bool {
-			return "", errors.New("[" + c.Col + "] [大于] 运算不能用于 字符串类型或布尔类型")
+		if c.Type == Bool {
+			return "", errors.New("[" + c.Col + "] [大于] 运算不能用于 布尔类型")
 		}
 
 		if c.Values[0] == "" {
 			return "", errors.New("[" + c.Col + "] [大于等于] 运算 值不能为空")
+		}
+
+		if c.Type == String {
+			//如果是字符串，值需要用 单引号 括起来
+			return fmt.Sprintf("`%s` > '%s'", c.Col, c.Values[0]), nil
 		}
 
 		return fmt.Sprintf("`%s` > %s", c.Col, c.Values[0]), nil
@@ -177,6 +182,11 @@ func makeEachSqlCmd(c *Column) (str string, err error) {
 			return "", errors.New("[" + c.Col + "] [大于等于] 运算 值不能为空")
 		}
 
+		if c.Type == String {
+			//如果是字符串，值需要用 单引号 括起来
+			return fmt.Sprintf("`%s` >= '%s'", c.Col, c.Values[0]), nil
+		}
+
 		return fmt.Sprintf("`%s` >= %s", c.Col, c.Values[0]), nil
 
 	case LT:
@@ -187,6 +197,11 @@ func makeEachSqlCmd(c *Column) (str string, err error) {
 
 		if c.Values[0] == "" {
 			return "", errors.New("[" + c.Col + "] [小于] 运算 值不能为空")
+		}
+
+		if c.Type == String {
+			//如果是字符串，值需要用 单引号 括起来
+			return fmt.Sprintf("`%s` < '%s'", c.Col, c.Values[0]), nil
 		}
 
 		return fmt.Sprintf("`%s` < %s", c.Col, c.Values[0]), nil
@@ -201,16 +216,26 @@ func makeEachSqlCmd(c *Column) (str string, err error) {
 			return "", errors.New("[" + c.Col + "] [小于等于] 运算 值不能为空")
 		}
 
+		if c.Type == String {
+			//如果是字符串，值需要用 单引号 括起来
+			return fmt.Sprintf("`%s` <= '%s'", c.Col, c.Values[0]), nil
+		}
+
 		return fmt.Sprintf("`%s` <= %s", c.Col, c.Values[0]), nil
 
 	case BETWEEN:
 
 		if c.Type == String || c.Type == Bool {
-			return "", errors.New("[" + c.Col + "] [介于两者之间] 运算不能用于 字符串类型或布尔类型")
+			return "", errors.New("[" + c.Col + "] [介于两者之间] 运算不能用于 布尔类型")
 		}
 
 		if c.Values[0] == "" || c.Values[1] == "" {
 			return "", errors.New("[" + c.Col + "] [介于两者之间] 两个值都不能为空")
+		}
+
+		if c.Type == String {
+			//如果是字符串，值需要用 单引号 括起来
+			return fmt.Sprintf("`%s` BETWEEN '%s' AND '%s'", c.Col, c.Values[0], c.Values[1]), nil
 		}
 
 		return fmt.Sprintf("`%s` BETWEEN %s AND %s", c.Col, c.Values[0], c.Values[1]), nil
@@ -218,11 +243,16 @@ func makeEachSqlCmd(c *Column) (str string, err error) {
 	case NBETWEEN:
 
 		if c.Type == String || c.Type == Bool {
-			return "", errors.New("[" + c.Col + "] [介于两者之间] 运算不能用于 字符串类型或布尔类型")
+			return "", errors.New("[" + c.Col + "] [介于两者之间] 运算不能用于 布尔类型")
 		}
 
 		if c.Values[0] == "" || c.Values[1] == "" {
 			return "", errors.New("[" + c.Col + "] [介于两者之间] 两个值都不能为空")
+		}
+
+		if c.Type == String {
+			//如果是字符串，值需要用 单引号 括起来
+			return fmt.Sprintf("`%s` NOT BETWEEN '%s' AND '%s'", c.Col, c.Values[0], c.Values[1]), nil
 		}
 
 		return fmt.Sprintf("`%s` NOT BETWEEN %s AND %s", c.Col, c.Values[0], c.Values[1]), nil
