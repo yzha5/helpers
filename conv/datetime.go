@@ -17,7 +17,14 @@ func StrToDateTimePtr(format, str string, local *time.Location) *time.Time {
 	return &location
 }
 
-func DateTimeToStr(format string, t *time.Time) string {
+func DateTimeToStr(format string, t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format(format)
+}
+
+func DateTimeToStrPtr(format string, t *time.Time) string {
 	if t == nil {
 		return ""
 	}
